@@ -50,7 +50,7 @@ exports.register = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    return res.json({ error: "Registration Failed" });
+    return res.status(400).json({ error: "Registration Failed" });
   }
 };
 
@@ -90,6 +90,6 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    return res.json({ error: "Login Failed" });
+    return res.status(400).json({ error: "Login Failed" });
   }
 };

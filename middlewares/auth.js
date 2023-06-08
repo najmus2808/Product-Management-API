@@ -1,31 +1,23 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
 
-exports.requireSignin = (req, res, next) => {
-  try {
-    const decoded = jwt.verify(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
+exports.authenticate = (req, res, next) => {
+  const token = req.headers.authorization;
 
-    req.user = decoded;
-    next();
-  } catch (err) {
-    console.log(err);
-    return res.status(401).json("Invalid Token");
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
-};
 
-exports.isAdmin = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
-    if (user.role !== 1) {
-      return res.status(401).send("Unauthorized");
-    } else {
-      next();
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(401).json(err);
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Attach the decoded payload to the request object
+    req.user = decoded;
+
+    // Call the next middleware function
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 };
